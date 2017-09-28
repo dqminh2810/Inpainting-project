@@ -66,5 +66,18 @@ public class Matrix extends BoundingBox{
 		//Save image with format bmp -- format color BRGB
 		ImageIO.write(imageSaved, "BMP", new File(fileNameSave+".bmp"));
 	}
+	/*
+	 * Apply a Mask to the image Set every pixel such that Mask.val[i][j]=True to black color
+	 * Mask - = mask to apply
+	 */
+	public void applyMask(Mask mask){
+		Color black = new Color(0, 0, 0);
+		for (int i = 0; i < val.length; i++) {
+		    for (int j = 0; j < val[i].length; j++) {
+		    	if(mask.val[i][j]==true)
+		    		this.val[i][j].set(black);
+		    }
+		}
+	}
 }
 
