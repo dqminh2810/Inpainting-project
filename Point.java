@@ -57,4 +57,43 @@ public class Point{
 		text=text1+text2+text3;
 		return text;
 	}
+	/*
+	 * Return: the set of Edges that have the point as a starting point
+	 */
+	public Edge[] outerEdges(){
+		Edge eHR=null,eHL=null,eVD=null,eVU=null;
+		if(this.onCorner()){
+			if(i==bb.bb[0]&&j==bb.bb[1]){
+				eHR = new Edge(bb, 0, i, j, 1);			//horizontal - Right
+				eVD = new Edge(bb, 1, i, j, 1);			//vertical - Down
+			}else if(i==bb.bb[0]&&i==bb.bb[3]){
+				eHR = new Edge(bb, 0, i, j, 1);			//horizontal - Right
+				eVU = new Edge(bb, 1, i, j, -1);		//vertical - Up
+			}else if(i==bb.bb[2]&&j==bb.bb[1]){
+				eHL = new Edge(bb, 0, i, j, -1);			//horizontal - Left
+				eVD = new Edge(bb, 1, i, j, 1);				//vertical - Down
+			}else if(i==bb.bb[2]&&j==bb.bb[3]){
+				eHL = new Edge(bb, 0, i, j, -1);			//horizontal - Left
+				eVU = new Edge(bb, 1, i, j, -1);			//vertical - Up
+			}
+		}else if(this.onBorder()){
+			if(i==bb.bb[0]){
+				eHR = new Edge(bb, 0, i, j, 1);				//horizontal - Right
+				eHL = new Edge(bb, 0, i, j, -1);			//horizontal - Left
+				eVD = new Edge(bb, 1, i, j, 1);				//vertical - Down
+			}else if(j==bb.bb[3]){
+				eHR = new Edge(bb, 0, i, j, 1);				//horizontal - Right
+				eHL = new Edge(bb, 0, i, j, -1);			//horizontal - Left
+				eVU = new Edge(bb, 1, i, j, -1);			//vertical - Up
+			}
+		}else{
+			eHR = new Edge(bb, 0, i, j, 1);				//horizontal - Right
+			eHL = new Edge(bb, 0, i, j, -1);			//horizontal - Left
+			eVD = new Edge(bb, 1, i, j, 1);				//vertical - Down
+			eVU = new Edge(bb, 1, i, j, -1);			//vertical - Up
+		}
+	
+		Edge[] edgeTable = {eHR,eHL,eVD,eVU};
+		return edgeTable;
+	}
 }
