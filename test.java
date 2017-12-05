@@ -11,13 +11,17 @@ public class test {
 		
 		BoundingBox bb = new BoundingBox("test.png");
 //		System.out.println(bb.bb[3]+","+bb.bb[2]);
+		Color red = new Color(24,16,13);
+		Matrix matrix = new Matrix("logo_tux.bmp");
 		
-		Matrix m = new Matrix("test.bmp");
-		System.out.println(m.fileName.substring(m.fileName.length()-3));
-//		for(int i=0; i<m.width; i++)
-//			for(int j=0; j<m.height; j++)
-//			System.out.println(m.val[i][j]);
+		Mask mask = new Mask(matrix, red);
+		matrix.applyMask(mask);
+		System.out.println(red.toString());
 		
-		m.save("test3");
+////		for(int i=0; i<m.width; i++)
+////			for(int j=0; j<m.height; j++)
+////			System.out.println(m.val[i][j]);
+//		
+		matrix.save("test3");
 	}
 }
