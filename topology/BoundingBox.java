@@ -1,6 +1,7 @@
 package topology;
 import java.awt.image.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
@@ -59,7 +60,24 @@ public class BoundingBox {
 	*/
 	public BoundingBox(String fileName)  throws IOException 
 	{
-		this(ImageIO.read(new File(fileName)));
+		this(ImageIO.read(new FileInputStream(fileName)));
+//		BufferedImage image = null;						//Load image from file
+//		 		try {
+//		 			image=ImageIO.read(new File(fileName));
+//		 			height=image.getHeight();
+//		 			width=image.getWidth();
+//		 			size=width*height;
+//		 			nbEdgesHorizontal=height+1;			
+//		 			nbEdgesVertical=width+1;			
+//		 			nbEdges=nbEdgesHorizontal+nbEdgesVertical;
+//					bb = new int[4];
+//		 			bb[0]=image.getMinX();
+//		 			bb[1]=image.getMinY();
+//		 			bb[2]=width+bb[0];
+//		 			bb[3]=height+bb[1];
+//		 		} catch (Exception e) {
+//		 			e.getMessage();
+//		 		}
 	}
 	/**
 		A hard copy of boundingBox

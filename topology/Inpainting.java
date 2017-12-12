@@ -1,8 +1,11 @@
 package topology;
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 import java.util.Arrays;
+import org.apache.commons.cli.*;
 //import org.apache.commons.cli.*;
 
 /**
@@ -53,38 +56,50 @@ public class Inpainting {
 	}
 	//tim i,j min, max bb1 + marge = bb res
 	private BoundingBox searchingBox(Component c ,int marge){
-		int imin, imax, jmin, jmax;
-		imin=imax=c.points.get(0).i;
-		jmin=jmax=c.points.get(0).j;
-		for(int k=0; k<c.points.size(); k++){
-			if(imax<c.points.get(k).i)
-				imax=c.points.get(k).i;
-			if(imin>c.points.get(k).i)
-				imin=c.points.get(k).i;
-			if(jmax<c.points.get(k).j)
-				imax=c.points.get(k).j;
-			if(jmin>c.points.get(k).j)
-				imin=c.points.get(k).j;
-		}
-		if(imin-window.bb[0]>=marge){		//imin
-			imin-=marge;
-		}else
-			imin=window.bb[0];
-		if(window.bb[2]-imax>=marge){		//imax
-			imax+=marge;
-		}else
-			imax=window.bb[2];
-		if(jmin-window.bb[1]>=marge){		//jmin
-			jmin-=marge;
-		}else
-			jmin=window.bb[1];
-		if(window.bb[3]-jmax>=marge){		//jmax
-			jmax+=marge;
-		}else
-			jmin=window.bb[3];
-		
-		int[] bb_ = {imin, jmin, imax, jmax};
-		return new BoundingBox(bb_);
+//		int imin, imax, jmin, jmax;
+//		imin=imax=c.points.get(0).i;
+//		jmin=jmax=c.points.get(0).j;
+//		for(int k=0; k<c.points.size(); k++){
+//			if(imax<c.points.get(k).i)
+//				imax=c.points.get(k).i;
+//			if(imin>c.points.get(k).i)
+//				imin=c.points.get(k).i;
+//			if(jmax<c.points.get(k).j)
+//				imax=c.points.get(k).j;
+//			if(jmin>c.points.get(k).j)
+//				imin=c.points.get(k).j;
+//		}
+//		if(imin-window.bb[0]>=marge){		//imin
+//			imin-=marge;
+//		}else
+//			imin=window.bb[0];
+//		if(window.bb[2]-imax>=marge){		//imax
+//			imax+=marge;
+//		}else
+//			imax=window.bb[2];
+//		if(jmin-window.bb[1]>=marge){		//jmin
+//			jmin-=marge;
+//		}else
+//			jmin=window.bb[1];
+//		if(window.bb[3]-jmax>=marge){		//jmax
+//			jmax+=marge;
+//		}else
+//			jmin=window.bb[3];
+//		
+//		int[] bb_ = {imin, jmin, imax, jmax};
+//		return new BoundingBox(bb_);
+		Point pt0=c.points.get(0);
+		int[] bb=new int[]{pt0.i,pt0.j,pt0.i,pt0.j};
+		for(Point pt:c.points){
+			bb[0]=Math.min(bb[0],pt.i);
+			bb[1]=Math.min(bb[1],pt.j);
+			bb[2]=Math.max(bb[2],pt.i);
+			bb[3]=Math.max(bb[3],pt.j);
+		};
+		return new BoundingBox(new int[]{Math.max(bb[0]-marge,0),
+			Math.max(bb[1]-marge,0),
+			Math.min(bb[2]+marge,window.width),
+			Math.min(bb[3]+marge,window.height)});
 	}
 	
 	/**
@@ -143,6 +158,7 @@ public class Inpainting {
 	@param halfwidth half width of the patches
 	@param searchWidth margin of the seraching box around the connected components.
 		If searchWidth=0, the searchingBox is chosen as the whole window.
+	 * @return 
 	 */
 	public void restore(int halfwidth ,int searchWidth)  throws IOException{
 		Boundary b=new Boundary(m);
@@ -171,11 +187,13 @@ public class Inpainting {
 		}
 		System.out.println("Done");
 	}
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException, URISyntaxException{
 		
+		//Créer un nouveau parser et options
 		CommandLineParser parser = new BasicParser();
 		Options options =  new Options();
 		
+		//Ajouter les paramètres possibles dans la table options
 		options.addOption("p","p",true,"halfwidth");
 		options.addOption("s","s",true,"searchwidth");
 		options.addOption("m","m",true,"mask.bmp");
@@ -184,9 +202,23 @@ public class Inpainting {
 		
 		try{
 			CommandLine commandLine = parser.parse(options, args);
-			Inpainting test = new Inpainting(new Matrix(commandLine.getOptionValue("i")), new Mask(commandLine.getOptionValue("m"), new Color(0, 0, 0)));
-			test.restore((Integer)commandLine.getOptionObject("p"), (Integer)commandLine.getOptionObject("s"));
-			test.image.save(commandLine.getOptionValue("o"));
+			
+			//Obtener les paramètres en utilisant la méthode getOptionValue
+			int halfWidth=Integer.parseInt(commandLine.getOptionValue("p"));
+			int searchWidth=Integer.parseInt(commandLine.getOptionValue("s"));
+			String chemin_img_origin="C:\\Users\\dqminh\\Documents\\workspace\\Inpainting\\src\\"+commandLine.getOptionValue("i");
+			String chemin_mask="C:\\Users\\dqminh\\Documents\\workspace\\Inpainting\\src\\"+commandLine.getOptionValue("m");
+			String chemin_img_saved="C:\\Users\\dqminh\\Documents\\workspace\\Inpainting\\src\\"+commandLine.getOptionValue("o");
+			
+			//Transmettre les paramètres pour exécuter le programme
+			Inpainting test = new Inpainting(new Matrix(chemin_img_origin), new Mask(chemin_mask, new Color(0, 0, 0)));
+			test.restore(halfWidth, searchWidth);
+			test.image.save(chemin_img_saved);
+			
+			System.out.println(commandLine.getOptionValue("i"));
+			System.out.println(commandLine.getOptionValue("m"));
+			System.out.println(commandLine.getOptionValue("p"));
+			System.out.println(commandLine.getOptionValue("s"));
 			
 		}catch(ParseException e){
 			e.printStackTrace();

@@ -1,6 +1,7 @@
 package topology;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class Mask extends BoundingBox{
 		/**
@@ -40,9 +41,18 @@ public class Mask extends BoundingBox{
 	/**
 		@param fileName File Name of a bmp image 3x8bits that defines the mask
 		@param color the color of the pixels that defines the mask
+	 * @throws URISyntaxException 
 	*/
-	public Mask(String fileName,Color color) throws IOException 
+	public Mask(String fileName,Color color) throws IOException, URISyntaxException 
 	{
 		this(new Matrix(fileName),color);
+//		super(fileName);
+//		 		Matrix m = new Matrix(fileName);
+//		 		for(int i=0; i<height; i++){
+//		 			for (int j = 0; j < width; j++) {
+//		 				val[i][j]=m.val[i][j].isequalto(color);
+//					
+//		 			}
+//		 		}
 	}
 }
